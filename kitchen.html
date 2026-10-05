@@ -15,14 +15,14 @@
     body {
       background-color: #121820;
       color: #ffffff;
-      padding: 24px;
+      padding: 20px;
     }
 
     .header-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       flex-wrap: wrap;
       gap: 16px;
     }
@@ -49,7 +49,6 @@
     .badge-status {
       display: inline-flex;
       align-items: center;
-      width: fit-content;
       background: #0d4722;
       color: #4ade80;
       font-size: 13px;
@@ -58,18 +57,35 @@
       border-radius: 6px;
     }
 
+    .badge-audio {
+      display: inline-flex;
+      align-items: center;
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+    }
+    .badge-audio.armed {
+      background: #164e63;
+      color: #38bdf8;
+      border-color: #0284c7;
+    }
+
     .actions-bar {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     .btn-action {
       background: #2a3547;
       color: #e2e8f0;
       border: 1px solid #3e4c63;
-      padding: 8px 14px;
-      font-size: 14px;
+      padding: 8px 12px;
+      font-size: 13px;
       font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
@@ -83,20 +99,36 @@
 
     .orders-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
       gap: 20px;
     }
 
     .order-card {
       background-color: #1e2634;
       border: 1px solid #2d3748;
-      border-left: 6px solid #ff7a00;
       border-radius: 8px;
-      padding: 20px;
+      padding: 18px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      position: relative;
+    }
+
+    /* Flashing highlight for new pending orders */
+    .order-card.pending {
+      border: 2px solid #ef4444;
+      animation: alertPulse 1.2s infinite ease-in-out;
+    }
+
+    @keyframes alertPulse {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+
+    .order-card.accepted {
+      border-left: 6px solid #22c55e;
     }
 
     .order-header {
@@ -104,12 +136,12 @@
       justify-content: space-between;
       align-items: flex-start;
       border-bottom: 1px solid #2d3748;
-      padding-bottom: 12px;
+      padding-bottom: 10px;
     }
 
     .order-number {
       font-size: 20px;
-      font-weight: 700;
+      font-weight: 800;
       color: #f8fafc;
     }
 
@@ -124,93 +156,141 @@
     .badge-delivery { background: #0284c7; color: #ffffff; }
     .badge-collection { background: #d97706; color: #ffffff; }
 
+    .status-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .status-pending { background: #7f1d1d; color: #fecaca; }
+    .status-accepted { background: #14532d; color: #bbf7d0; }
+
     .order-customer {
       font-size: 15px;
-      color: #94a3b8;
+      font-weight: 600;
+      color: #cbd5e1;
       margin-top: 4px;
     }
 
-    .order-address {
-      font-size: 13px;
-      color: #38bdf8;
-      margin-top: 4px;
+    /* Full prominent delivery box */
+    .delivery-box {
       background: #0f172a;
-      padding: 4px 8px;
-      border-radius: 4px;
+      border: 1px solid #1e293b;
+      padding: 10px;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .delivery-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: #38bdf8;
+      text-transform: uppercase;
+    }
+
+    .delivery-address {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.3;
     }
 
     .order-notes {
       font-size: 12px;
       color: #fbbf24;
       background: #2b1d06;
-      padding: 4px 8px;
+      padding: 6px 10px;
       border-radius: 4px;
       border-left: 3px solid #f59e0b;
-    }
-
-    .order-time {
-      font-size: 13px;
-      font-weight: 600;
-      color: #e2e8f0;
-      background: #2a3547;
-      padding: 4px 8px;
-      border-radius: 4px;
     }
 
     .item-list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
+      background: #171d27;
+      padding: 10px;
+      border-radius: 6px;
     }
 
     .item-row {
       display: flex;
       justify-content: space-between;
-      font-size: 15px;
+      font-size: 14px;
       color: #f1f5f9;
     }
 
     .item-name { font-weight: 500; }
-    .item-price { color: #cbd5e1; }
+    .item-price { color: #94a3b8; font-variant-numeric: tabular-nums; }
 
     .order-footer {
-      border-top: 1px solid #2d3748;
-      padding-top: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 17px;
-      font-weight: 700;
+      font-weight: 800;
+      padding-top: 4px;
     }
 
-    .card-actions {
+    .action-group {
       display: flex;
       gap: 8px;
+      margin-top: 6px;
     }
 
-    .btn-print {
+    .btn-accept {
       flex: 2;
-      background-color: #0099ff;
+      background-color: #16a34a;
       color: #ffffff;
       border: none;
       padding: 12px 14px;
-      font-size: 15px;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-accept:hover { background-color: #15803d; }
+
+    .btn-reject {
+      flex: 1;
+      background-color: #dc2626;
+      color: #ffffff;
+      border: none;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-reject:hover { background-color: #b91c1c; }
+
+    .btn-print {
+      flex: 2;
+      background-color: #0284c7;
+      color: #ffffff;
+      border: none;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-weight: 700;
       border-radius: 6px;
       cursor: pointer;
     }
 
     .btn-done {
       flex: 1;
-      background-color: #15803d;
+      background-color: #334155;
       color: #ffffff;
-      border: 1px solid #22c55e;
+      border: 1px solid #475569;
       padding: 12px 14px;
-      font-size: 15px;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 700;
       border-radius: 6px;
       cursor: pointer;
     }
+    .btn-done:hover { background-color: #1e293b; }
 
     .empty-state {
       grid-column: 1 / -1;
@@ -223,19 +303,21 @@
     }
   </style>
 </head>
-<body>
+<body onclick="armAudioContext()">
 
   <div class="header-bar">
     <div class="title-group">
       <h1>Kitchen Orders</h1>
       <div class="badge-bar">
-        <span class="badge-status">Auto-Print Ready</span>
+        <span class="badge-status">System Live</span>
+        <span class="badge-audio" id="audio-indicator">🔔 Tap Anywhere to Enable Alarm</span>
       </div>
     </div>
     <div class="actions-bar">
       <button class="btn-action" onclick="generateSimulatedOrder('DELIVERY')">+ Test Delivery</button>
       <button class="btn-action" onclick="generateSimulatedOrder('COLLECTION')">+ Test Collection</button>
       <button class="btn-action" id="toggle-autoprint" onclick="toggleAutoPrint()">Auto-Print: OFF</button>
+      <button class="btn-action" style="background:#7f1d1d; border-color:#b91c1c;" onclick="resetDemoOrders()">Reset Orders</button>
     </div>
   </div>
 
@@ -245,27 +327,145 @@
     const LINE_WIDTH = 24;
     let autoPrintEnabled = false;
 
-    let activeOrders = JSON.parse(localStorage.getItem("activeKitchenOrders") || "null");
-    if (!activeOrders || activeOrders.length === 0) {
-      activeOrders = [
-        {
-          id: "101",
-          type: "DELIVERY",
-          customer: "Justin",
-          phone: "07123 456789",
-          address: "12 High Street, PO11",
-          notes: "Ring doorbell",
-          time: "11:40 AM",
-          items: [
-            { name: "Dan Dan Noodles", qty: 1, price: 8.50 },
-            { name: "Chicken Chow Mein", qty: 1, price: 8.95 }
-          ],
-          total: 17.45
-        }
-      ];
-      localStorage.setItem("activeKitchenOrders", JSON.stringify(activeOrders));
+    // --- Web Audio Synthesizer Alarm ---
+    let audioCtx = null;
+    let alarmTimer = null;
+
+    function armAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        document.getElementById("audio-indicator").textContent = "🔔 Alarm Active";
+        document.getElementById("audio-indicator").classList.add("armed");
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
     }
 
+    function playBeepTone(freq, duration, delay) {
+      if (!audioCtx) return;
+      setTimeout(() => {
+        try {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+          gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start();
+          osc.stop(audioCtx.currentTime + duration);
+        } catch (e) {
+          console.warn("Audio play prevented:", e);
+        }
+      }, delay);
+    }
+
+    function soundAlarmBurst() {
+      // Classic commercial kitchen two-tone loud chime
+      playBeepTone(950, 0.18, 0);
+      playBeepTone(1350, 0.22, 220);
+    }
+
+    function checkAlarmStatus() {
+      const hasPending = activeOrders.some(o => o.status === "PENDING");
+      if (hasPending) {
+        if (!alarmTimer) {
+          soundAlarmBurst();
+          alarmTimer = setInterval(soundAlarmBurst, 1500);
+        }
+      } else {
+        if (alarmTimer) {
+          clearInterval(alarmTimer);
+          alarmTimer = null;
+        }
+      }
+    }
+
+    // --- Order Data & Management ---
+    const defaultOrders = [
+      {
+        id: "101",
+        status: "ACCEPTED",
+        type: "DELIVERY",
+        customer: "Justin",
+        phone: "07123 456789",
+        address: "12 High Street, Hayling Island, PO11 0AA",
+        notes: "Ring doorbell",
+        time: "11:40 AM",
+        items: [
+          { name: "Dan Dan Noodles", qty: 1, price: 8.50 },
+          { name: "Chicken Chow Mein", qty: 1, price: 8.95 }
+        ],
+        total: 17.45
+      }
+    ];
+
+    let activeOrders = [];
+
+    function loadOrders() {
+      try {
+        const stored = localStorage.getItem("activeKitchenOrders");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            activeOrders = parsed;
+            checkAlarmStatus();
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Storage error, resetting:", err);
+      }
+      activeOrders = [...defaultOrders];
+      localStorage.setItem("activeKitchenOrders", JSON.stringify(activeOrders));
+      checkAlarmStatus();
+    }
+
+    function resetDemoOrders() {
+      activeOrders = [...defaultOrders];
+      localStorage.setItem("activeKitchenOrders", JSON.stringify(activeOrders));
+      renderOrders();
+      checkAlarmStatus();
+    }
+
+    function acceptOrder(orderId) {
+      armAudioContext();
+      const order = activeOrders.find(o => o.id === orderId);
+      if (!order) return;
+
+      order.status = "ACCEPTED";
+      localStorage.setItem("activeKitchenOrders", JSON.stringify(activeOrders));
+      renderOrders();
+      checkAlarmStatus();
+
+      // Automatically print upon kitchen acceptance
+      sendToPrinter(order);
+    }
+
+    function rejectOrder(orderId) {
+      armAudioContext();
+      const reason = prompt("Enter rejection reason for customer (e.g. Kitchen closed / Out of range):", "Kitchen is currently at capacity");
+      if (reason === null) return; // User clicked cancel
+
+      activeOrders = activeOrders.filter(o => o.id !== orderId);
+      localStorage.setItem("activeKitchenOrders", JSON.stringify(activeOrders));
+      renderOrders();
+      checkAlarmStatus();
+    }
+
+    function completeOrder(orderId) {
+      activeOrders = activeOrders.filter(o => o.id !== orderId);
+      localStorage.setItem("activeKitchenOrders", JSON.stringify(activeOrders));
+      renderOrders();
+      checkAlarmStatus();
+    }
+
+    // --- Thermal Print Generator ---
     function formatRow(left, right) {
       const maxLeft = LINE_WIDTH - right.length - 1;
       let trimmedLeft = left;
@@ -282,7 +482,6 @@
       return " ".repeat(pad) + text;
     }
 
-    // Dynamic 24-character Base64 thermal ticket
     function sendToPrinter(order) {
       const sep = "=".repeat(LINE_WIDTH);
       const dash = "-".repeat(LINE_WIDTH);
@@ -293,7 +492,7 @@
         centerRow("*** " + (order.type || "ONLINE") + " ***"),
         sep,
         formatRow("#" + order.id, order.time),
-        "Cust: " + order.customer.substring(0, 17)
+        "Cust: " + (order.customer || "").substring(0, 17)
       ];
 
       if (order.phone) {
@@ -302,28 +501,36 @@
 
       if (order.type === "DELIVERY" && order.address) {
         ticket.push(dash);
-        ticket.push("DELIVERY TO:");
-        if (order.address.length > LINE_WIDTH) {
-          ticket.push(order.address.substring(0, LINE_WIDTH));
-          ticket.push(order.address.substring(LINE_WIDTH, LINE_WIDTH * 2));
-        } else {
-          ticket.push(order.address);
-        }
+        ticket.push("DELIVERY ADDRESS:");
+        
+        // Chunk full address across 24-character lines cleanly
+        const words = order.address.split(" ");
+        let currentLine = "";
+        words.forEach(w => {
+          if ((currentLine + " " + w).trim().length <= LINE_WIDTH) {
+            currentLine = (currentLine + " " + w).trim();
+          } else {
+            ticket.push(currentLine);
+            currentLine = w;
+          }
+        });
+        if (currentLine) ticket.push(currentLine);
       }
 
       if (order.notes) {
+        ticket.push(dash);
         ticket.push("NOTE: " + order.notes.substring(0, 18));
       }
 
       ticket.push(dash);
 
-      order.items.forEach(item => {
+      (order.items || []).forEach(item => {
         const itemLine = `${item.qty}x ${item.name}`;
-        ticket.push(formatRow(itemLine, item.price.toFixed(2)));
+        ticket.push(formatRow(itemLine, Number(item.price).toFixed(2)));
       });
 
       ticket.push(dash);
-      ticket.push(formatRow("TOTAL:", "GBP " + order.total.toFixed(2)));
+      ticket.push(formatRow("TOTAL:", "GBP " + Number(order.total).toFixed(2)));
       ticket.push(sep);
       ticket.push("");
       ticket.push("");
@@ -334,76 +541,118 @@
       window.location.href = "rawbt:data:text/plain;base64," + base64Data;
     }
 
-    function completeOrder(orderId) {
-      activeOrders = activeOrders.filter(order => order.id !== orderId);
-      localStorage.setItem("activeKitchenOrders", JSON.stringify(activeOrders));
-      renderOrders();
-    }
-
+    // --- Render View ---
     function renderOrders() {
       const container = document.getElementById("orders-container");
       if (!container) return;
       container.innerHTML = "";
 
-      if (activeOrders.length === 0) {
+      if (!activeOrders || activeOrders.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
-            <h2>No active orders</h2>
-            <p style="margin-top: 8px;">Tap <strong>+ Test Delivery</strong> or place an order from the customer menu.</p>
+            <h2>No active kitchen orders</h2>
+            <p style="margin-top: 8px;">Waiting for online orders or tap <strong>+ Test Delivery</strong> above.</p>
           </div>
         `;
         return;
       }
 
       activeOrders.forEach(order => {
-        const card = document.createElement("div");
-        card.className = "order-card";
-
+        const isPending = order.status === "PENDING";
         const isDelivery = (order.type || "DELIVERY") === "DELIVERY";
         const badgeClass = isDelivery ? "badge-delivery" : "badge-collection";
 
-        const itemsHtml = order.items.map(item => `
+        const card = document.createElement("div");
+        card.className = `order-card ${isPending ? 'pending' : 'accepted'}`;
+
+        const itemsHtml = (order.items || []).map(item => `
           <div class="item-row">
             <span class="item-name">${item.qty}x ${item.name}</span>
-            <span class="item-price">${item.price.toFixed(2)}</span>
+            <span class="item-price">£${Number(item.price * item.qty).toFixed(2)}</span>
           </div>
         `).join("");
+
+        // Address Display Area
+        let addressBlock = "";
+        if (isDelivery && order.address) {
+          addressBlock = `
+            <div class="delivery-box">
+              <span class="delivery-label">📍 Destination Address</span>
+              <span class="delivery-address">${order.address}</span>
+            </div>
+          `;
+        } else if (!isDelivery) {
+          addressBlock = `
+            <div class="delivery-box" style="border-left: 3px solid #f59e0b;">
+              <span class="delivery-label" style="color: #f59e0b;">📦 Collection</span>
+              <span class="delivery-address">Customer picking up at store counter</span>
+            </div>
+          `;
+        }
+
+        // Action Buttons based on status
+        let buttonsHtml = "";
+        if (isPending) {
+          buttonsHtml = `
+            <div class="action-group">
+              <button class="btn-accept" onclick="acceptOrder('${order.id}')">✓ Accept & Print</button>
+              <button class="btn-reject" onclick="rejectOrder('${order.id}')">✕ Reject</button>
+            </div>
+          `;
+        } else {
+          buttonsHtml = `
+            <div class="action-group">
+              <button class="btn-print" onclick="sendToPrinter(activeOrders.find(o => o.id === '${order.id}'))">🖨 Reprint Ticket</button>
+              <button class="btn-done" onclick="completeOrder('${order.id}')">Done</button>
+            </div>
+          `;
+        }
 
         card.innerHTML = `
           <div class="order-header">
             <div>
               <div style="display:flex; align-items:center;">
-                <span class="order-number">Order #${order.id}</span>
+                <span class="order-number">#${order.id}</span>
                 <span class="order-type-badge ${badgeClass}">${order.type || "DELIVERY"}</span>
+                <span class="status-tag ${isPending ? 'status-pending' : 'status-accepted'}" style="margin-left:6px;">
+                  ${isPending ? 'Pending' : 'Cooking'}
+                </span>
               </div>
               <div class="order-customer">👤 ${order.customer} ${order.phone ? `• 📞 ${order.phone}` : ''}</div>
-              ${isDelivery && order.address ? `<div class="order-address">📍 ${order.address}</div>` : ''}
-              ${order.notes ? `<div class="order-notes">📝 ${order.notes}</div>` : ''}
             </div>
-            <div class="order-time">${order.time}</div>
+            <div style="text-align:right;">
+              <span style="font-size:12px; color:#94a3b8; font-weight:600;">${order.time}</span>
+            </div>
           </div>
+
+          ${addressBlock}
+          ${order.notes ? `<div class="order-notes">📝 <strong>Note:</strong> ${order.notes}</div>` : ''}
+
           <div class="item-list">
             ${itemsHtml}
           </div>
+
           <div class="order-footer">
-            <span>Total:</span>
-            <span>GBP ${order.total.toFixed(2)}</span>
+            <span>Total Value:</span>
+            <span style="color:#4ade80;">£${Number(order.total).toFixed(2)}</span>
           </div>
-          <div class="card-actions">
-            <button class="btn-print" onclick="sendToPrinter(activeOrders.find(o => o.id === '${order.id}'))">
-              Print Ticket
-            </button>
-            <button class="btn-done" onclick="completeOrder('${order.id}')">
-              Done
-            </button>
-          </div>
+
+          ${buttonsHtml}
         `;
+
         container.appendChild(card);
       });
     }
 
+    // --- Demo Order Generators ---
     function generateSimulatedOrder(type = "DELIVERY") {
-      const mockNames = ["Sarah M.", "David K.", "Elena R.", "Marcus T."];
+      armAudioContext();
+      const mockNames = ["Sarah Jenkins", "David Miller", "Elena Rostova", "Marcus Vance"];
+      const addresses = [
+        "48 Seafront Road, Hayling Island, PO11 9HL",
+        "12 Rails Lane, Mengham, PO11 9EF",
+        "8 Havant Road, Hayling Island, PO11 0AA"
+      ];
       const menu = [
         { name: "Sweet & Sour Pork", price: 9.20 },
         { name: "Egg Fried Rice", price: 4.50 },
@@ -413,29 +662,31 @@
 
       const randomId = Math.floor(102 + Math.random() * 800).toString();
       const randomCustomer = mockNames[Math.floor(Math.random() * mockNames.length)];
-      const randomItem1 = menu[Math.floor(Math.random() * menu.length)];
-      const randomItem2 = menu[Math.floor(Math.random() * menu.length)];
+      const randomAddress = addresses[Math.floor(Math.random() * addresses.length)];
+      const item1 = menu[Math.floor(Math.random() * menu.length)];
+      const item2 = menu[Math.floor(Math.random() * menu.length)];
 
       const now = new Date();
       const hours = now.getHours();
       const minutes = String(now.getMinutes()).padStart(2, '0');
       const timeStr = `${hours % 12 || 12}:${minutes} ${hours >= 12 ? 'PM' : 'AM'}`;
 
-      const sub = randomItem1.price + randomItem2.price;
+      const sub = item1.price + item2.price;
       const delCharge = type === "DELIVERY" ? 1.50 : 0.00;
       const platCharge = 0.99;
 
       const newOrder = {
         id: randomId,
+        status: "PENDING", // Needs acceptance
         type: type,
         customer: randomCustomer,
         phone: "07987 654321",
-        address: type === "DELIVERY" ? "44 Seafront Rd, PO11 9HL" : "COLLECTION AT SHOP",
-        notes: type === "DELIVERY" ? "Leave by side gate" : "",
+        address: type === "DELIVERY" ? randomAddress : "COLLECTION AT SHOP",
+        notes: type === "DELIVERY" ? "Please leave on porch" : "",
         time: timeStr,
         items: [
-          { name: randomItem1.name, qty: 1, price: randomItem1.price },
-          { name: randomItem2.name, qty: 1, price: randomItem2.price }
+          { name: item1.name, qty: 1, price: item1.price },
+          { name: item2.name, qty: 1, price: item2.price }
         ],
         total: Number((sub + delCharge + platCharge).toFixed(2))
       };
@@ -443,9 +694,10 @@
       activeOrders.unshift(newOrder);
       localStorage.setItem("activeKitchenOrders", JSON.stringify(activeOrders));
       renderOrders();
+      checkAlarmStatus();
 
       if (autoPrintEnabled) {
-        sendToPrinter(newOrder);
+        acceptOrder(newOrder.id);
       }
     }
 
@@ -456,17 +708,23 @@
       btn.classList.toggle("active", autoPrintEnabled);
     }
 
-    // Listens for orders placed in the customer tab
+    // Live storage sync across tabs
     window.addEventListener("storage", (e) => {
       if (e.key === "activeKitchenOrders" && e.newValue) {
-        activeOrders = JSON.parse(e.newValue);
-        renderOrders();
-        if (autoPrintEnabled && activeOrders.length > 0) {
-          sendToPrinter(activeOrders[0]);
+        try {
+          activeOrders = JSON.parse(e.newValue);
+          renderOrders();
+          checkAlarmStatus();
+          if (autoPrintEnabled && activeOrders.length > 0 && activeOrders[0].status === "PENDING") {
+            acceptOrder(activeOrders[0].id);
+          }
+        } catch (err) {
+          console.error("Storage parse error:", err);
         }
       }
     });
 
+    loadOrders();
     renderOrders();
   </script>
 </body>
