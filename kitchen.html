@@ -66,6 +66,7 @@
       padding: 4px 10px;
       border-radius: 6px;
       border: 1px solid #334155;
+      cursor: pointer;
     }
     .badge-audio.armed {
       background: #164e63;
@@ -91,12 +92,6 @@
       cursor: pointer;
     }
 
-    .btn-action.active {
-      background: #15803d;
-      color: #ffffff;
-      border-color: #22c55e;
-    }
-
     .orders-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -115,7 +110,7 @@
       position: relative;
     }
 
-    /* Flashing highlight for pending orders awaiting review */
+    /* Urgent pulsing red border for orders awaiting kitchen acceptance */
     .order-card.pending {
       border: 2px solid #ef4444;
       animation: alertPulse 1.2s infinite ease-in-out;
@@ -309,13 +304,12 @@
       <h1>Kitchen Orders</h1>
       <div class="badge-bar">
         <span class="badge-status">System Live</span>
-        <span class="badge-audio" id="audio-indicator">🔔 Tap Anywhere to Enable Alarm</span>
+        <span class="badge-audio" id="audio-indicator" onclick="armAudioContext()">🔔 Tap Anywhere to Enable Audio</span>
       </div>
     </div>
     <div class="actions-bar">
       <button class="btn-action" onclick="generateSimulatedOrder('DELIVERY')">+ Test Delivery</button>
       <button class="btn-action" onclick="generateSimulatedOrder('COLLECTION')">+ Test Collection</button>
-      <button class="btn-action active" id="toggle-autoprint" onclick="toggleAutoPrint()">Print on Accept: ON</button>
       <button class="btn-action" style="background:#7f1d1d; border-color:#b91c1c;" onclick="resetDemoOrders()">Reset Orders</button>
     </div>
   </div>
@@ -324,21 +318,22 @@
 
   <script>
     const LINE_WIDTH = 24;
-    // When enabled, tapping Accept automatically dispatches to RawBT
-    let autoPrintOnAccept = true;
 
-    // --- Web Audio Synthesizer Alarm ---
+    // --- Audio Synthesis Alarm ---
     let audioCtx = null;
     let alarmTimer = null;
 
     function armAudioContext() {
       if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        document.getElementById("audio-indicator").textContent = "🔔 Alarm Active";
-        document.getElementById("audio-indicator").classList.add("armed");
       }
       if (audioCtx.state === 'suspended') {
         audioCtx.resume();
+      }
+      const indicator = document.getElementById("audio-indicator");
+      if (indicator) {
+        indicator.textContent = "🔔 Alarm Active";
+        indicator.classList.add("armed");
       }
     }
 
@@ -351,7 +346,7 @@
           osc.type = 'triangle';
           osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
-          gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
           gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
 
           osc.connect(gain);
@@ -360,7 +355,7 @@
           osc.start();
           osc.stop(audioCtx.currentTime + duration);
         } catch (e) {
-          console.warn("Audio play prevented:", e);
+          console.warn("Audio playback prevented:", e);
         }
       }, delay);
     }
@@ -385,7 +380,7 @@
       }
     }
 
-    // --- Order Queue Setup ---
+    // --- Order Data & Management ---
     const defaultOrders = [
       {
         id: "101",
@@ -418,7 +413,7 @@
           }
         }
       } catch (err) {
-        console.warn("Storage error, resetting:", err);
+        console.warn("Storage error, resetting default:", err);
       }
       activeOrders = [...defaultOrders];
       localStorage.setItem("activeKitchenOrders", JSON.stringify(activeOrders));
@@ -432,7 +427,6 @@
       checkAlarmStatus();
     }
 
-    // Explicit manual accept action by restaurant staff
     function acceptOrder(orderId) {
       armAudioContext();
       const order = activeOrders.find(o => o.id === orderId);
@@ -443,16 +437,13 @@
       renderOrders();
       checkAlarmStatus();
 
-      // Only print if "Print on Accept" toggle is enabled
-      if (autoPrintOnAccept) {
-        sendToPrinter(order);
-      }
+      // Prints the receipt directly upon acceptance
+      sendToPrinter(order);
     }
 
-    // Explicit manual reject action by restaurant staff
     function rejectOrder(orderId) {
       armAudioContext();
-      const reason = prompt("Reason for rejection:", "Kitchen is currently at capacity");
+      const reason = prompt("Enter rejection reason for customer:", "Kitchen is currently at maximum capacity");
       if (reason === null) return;
 
       activeOrders = activeOrders.filter(o => o.id !== orderId);
@@ -468,7 +459,7 @@
       checkAlarmStatus();
     }
 
-    // --- Thermal Print Generator ---
+    // --- Thermal Print Protocol ---
     function formatRow(left, right) {
       const maxLeft = LINE_WIDTH - right.length - 1;
       let trimmedLeft = left;
@@ -526,7 +517,7 @@
       ticket.push(dash);
 
       (order.items || []).forEach(item => {
-        const itemLine = `${item.qty}x ${item.name}`;
+        const itemLine = `${item.qty}x${item.name}`;
         ticket.push(formatRow(itemLine, Number(item.price).toFixed(2)));
       });
 
@@ -542,7 +533,7 @@
       window.location.href = "rawbt:data:text/plain;base64," + base64Data;
     }
 
-    // --- Render View ---
+    // --- Screen Render ---
     function renderOrders() {
       const container = document.getElementById("orders-container");
       if (!container) return;
@@ -552,7 +543,7 @@
         container.innerHTML = `
           <div class="empty-state">
             <h2>No active kitchen orders</h2>
-            <p style="margin-top: 8px;">Waiting for online orders or tap <strong>+ Test Delivery</strong> above.</p>
+            <p style="margin-top: 8px;">Waiting for orders. Tap <strong>+ Test Delivery</strong> to test the workflow.</p>
           </div>
         `;
         return;
@@ -560,4 +551,46 @@
 
       activeOrders.forEach(order => {
         const isPending = order.status === "PENDING";
-        const isDelivery = (order.type
+        const isDelivery = (order.type || "DELIVERY") === "DELIVERY";
+        const badgeClass = isDelivery ? "badge-delivery" : "badge-collection";
+
+        const card = document.createElement("div");
+        card.className = `order-card ${isPending ? 'pending' : 'accepted'}`;
+
+        const itemsHtml = (order.items || []).map(item => `
+          <div class="item-row">
+            <span class="item-name">${item.qty}x${item.name}</span>
+            <span class="item-price">£${Number(item.price * item.qty).toFixed(2)}</span>
+          </div>
+        `).join("");
+
+        let addressBlock = "";
+        if (isDelivery && order.address) {
+          addressBlock = `
+            <div class="delivery-box">
+              <span class="delivery-label">📍 Delivery Address</span>
+              <span class="delivery-address">${order.address}</span>
+            </div>
+          `;
+        } else if (!isDelivery) {
+          addressBlock = `
+            <div class="delivery-box" style="border-left: 3px solid #f59e0b;">
+              <span class="delivery-label" style="color: #f59e0b;">📦 Collection</span>
+              <span class="delivery-address">Customer collecting at restaurant</span>
+            </div>
+          `;
+        }
+
+        let buttonsHtml = "";
+        if (isPending) {
+          buttonsHtml = `
+            <div class="action-group">
+              <button class="btn-accept" onclick="acceptOrder('${order.id}')">✓ Accept & Print</button>
+              <button class="btn-reject" onclick="rejectOrder('${order.id}')">✕ Reject</button>
+            </div>
+          `;
+        } else {
+          buttonsHtml = `
+            <div class="action-group">
+              <button class="btn-print" onclick="sendToPrinter(activeOrders.find(o => o.id === '${order.id}'))">🖨 Reprint Slip</button>
+              <button class="btn-done
