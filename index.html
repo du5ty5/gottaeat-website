@@ -21,7 +21,7 @@
     header {
       background-color: #2b2b2b;
       color: #ffffff;
-      padding: 18px 20px;
+      padding: 16px 20px;
       text-align: center;
       position: sticky;
       top: 0;
@@ -42,13 +42,41 @@
       margin-top: 2px;
     }
 
+    /* Fulfillment Selector */
+    .order-type-bar {
+      display: flex;
+      background: #1e293b;
+      padding: 6px;
+      gap: 6px;
+      max-width: 400px;
+      margin: 10px auto 0;
+      border-radius: 8px;
+    }
+
+    .type-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .type-btn.active {
+      background: #e11d48;
+      color: #ffffff;
+    }
+
     .cat-nav {
       display: flex;
       overflow-x: auto;
       background: #ffffff;
       border-bottom: 1px solid #e2e8f0;
       position: sticky;
-      top: 67px;
+      top: 108px;
       z-index: 90;
       white-space: nowrap;
       scrollbar-width: none;
@@ -101,30 +129,10 @@
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
     }
 
-    .item-info {
-      flex: 1;
-    }
-
-    .item-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: #1e293b;
-      line-height: 1.3;
-    }
-
-    .item-desc {
-      font-size: 12px;
-      color: #64748b;
-      margin-top: 4px;
-      line-height: 1.4;
-    }
-
-    .item-price {
-      font-size: 15px;
-      font-weight: 700;
-      color: #dc2626;
-      margin-top: 4px;
-    }
+    .item-info { flex: 1; }
+    .item-title { font-size: 15px; font-weight: 700; color: #1e293b; line-height: 1.3; }
+    .item-desc { font-size: 12px; color: #64748b; margin-top: 4px; line-height: 1.4; }
+    .item-price { font-size: 15px; font-weight: 700; color: #dc2626; margin-top: 4px; }
 
     .btn-add {
       background: #e11d48;
@@ -135,11 +143,6 @@
       font-size: 14px;
       font-weight: 700;
       cursor: pointer;
-      transition: background 0.15s;
-    }
-
-    .btn-add:hover {
-      background: #be123c;
     }
 
     .cart-bar {
@@ -157,22 +160,9 @@
       z-index: 1000;
     }
 
-    .cart-summary {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .cart-count {
-      font-size: 13px;
-      font-weight: 600;
-      color: #64748b;
-    }
-
-    .cart-total {
-      font-size: 18px;
-      font-weight: 800;
-      color: #1e293b;
-    }
+    .cart-summary { display: flex; flex-direction: column; }
+    .cart-count { font-size: 13px; font-weight: 600; color: #64748b; }
+    .cart-total { font-size: 18px; font-weight: 800; color: #1e293b; }
 
     .btn-checkout {
       background: #e11d48;
@@ -185,6 +175,7 @@
       cursor: pointer;
     }
 
+    /* Cart Modal & Checkout Form */
     .cart-modal {
       display: none;
       position: fixed;
@@ -193,10 +184,7 @@
       z-index: 2000;
       align-items: flex-end;
     }
-
-    .cart-modal.open {
-      display: flex;
-    }
+    .cart-modal.open { display: flex; }
 
     .modal-content {
       background: #ffffff;
@@ -205,7 +193,7 @@
       margin: 0 auto;
       border-radius: 16px 16px 0 0;
       padding: 20px;
-      max-height: 80vh;
+      max-height: 88vh;
       display: flex;
       flex-direction: column;
     }
@@ -228,16 +216,11 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 0;
+      padding: 8px 0;
       border-bottom: 1px dashed #e2e8f0;
     }
 
-    .cart-qty-ctrl {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
+    .cart-qty-ctrl { display: flex; gap: 8px; align-items: center; }
     .btn-qty {
       background: #f1f5f9;
       border: 1px solid #cbd5e1;
@@ -247,6 +230,55 @@
       cursor: pointer;
       font-weight: 700;
     }
+
+    .checkout-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-group label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+    }
+
+    .form-input {
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .cost-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+      color: #64748b;
+      margin: 10px 0;
+    }
+
+    .cost-row {
+      display: flex;
+      justify-content: space-between;
+    }
+    .cost-total-row {
+      font-size: 16px;
+      font-weight: 800;
+      color: #0f172a;
+      border-top: 1px solid #cbd5e1;
+      padding-top: 6px;
+    }
   </style>
 </head>
 <body>
@@ -254,6 +286,10 @@
   <header>
     <div class="brand-title">WOKS WAGON</div>
     <div class="brand-sub">Authentic Chinese Takeaway • Hayling Island (02392 460505)</div>
+    <div class="order-type-bar">
+      <button class="type-btn active" id="btn-type-delivery" onclick="setOrderType('delivery')">Delivery</button>
+      <button class="type-btn" id="btn-type-collection" onclick="setOrderType('collection')">Collection</button>
+    </div>
   </header>
 
   <nav class="cat-nav">
@@ -281,9 +317,7 @@
     <a href="#desserts" class="cat-btn">Desserts & Drinks</a>
   </nav>
 
-  <main class="menu-container" id="menu-target">
-    <!-- Populated dynamically -->
-  </main>
+  <main class="menu-container" id="menu-target"></main>
 
   <div class="cart-bar">
     <div class="cart-summary">
@@ -296,21 +330,60 @@
   <div class="cart-modal" id="cart-modal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>Your Order</h3>
+        <h3 id="modal-heading">Your Order (Delivery)</h3>
         <button class="btn-qty" onclick="closeCart()">✕</button>
       </div>
+
       <div class="cart-items-list" id="modal-items"></div>
-      <div style="padding-top: 14px; border-top: 1px solid #e2e8f0;">
-        <div style="display:flex; justify-content:space-between; margin-bottom: 12px; font-weight:700; font-size:17px;">
-          <span>Total:</span>
-          <span id="modal-total">£0.00</span>
+
+      <!-- Checkout Details Form -->
+      <div class="checkout-form">
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" id="cust-name" class="form-input" placeholder="e.g. Justin" value="Justin">
         </div>
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="cust-phone" class="form-input" placeholder="07123 456789" value="07123 456789">
+        </div>
+        
+        <div id="delivery-address-group" class="form-group">
+          <label>Delivery Address & Postcode</label>
+          <input type="text" id="cust-address" class="form-input" placeholder="e.g. 12 High Street, PO11 0AA" value="12 High Street, PO11 0AA">
+        </div>
+
+        <div class="form-group">
+          <label>Notes for Kitchen / Driver (Optional)</label>
+          <input type="text" id="cust-notes" class="form-input" placeholder="e.g. Please ring doorbell" value="">
+        </div>
+
+        <div class="cost-breakdown">
+          <div class="cost-row"><span>Subtotal:</span><span id="cost-subtotal">£0.00</span></div>
+          <div class="cost-row" id="row-delivery-fee"><span>Delivery Fee:</span><span>£1.50</span></div>
+          <div class="cost-row"><span>Platform Fee:</span><span>£0.99</span></div>
+          <div class="cost-row cost-total-row"><span>Total:</span><span id="cost-grand-total">£0.00</span></div>
+        </div>
+
         <button class="btn-checkout" style="width:100%;" onclick="placeOrder()">Place Order</button>
       </div>
     </div>
   </div>
 
   <script>
+    let orderType = "delivery"; // 'delivery' or 'collection'
+    const DELIVERY_FEE = 1.50;
+    const PLATFORM_FEE = 0.99;
+
+    function setOrderType(type) {
+      orderType = type;
+      document.getElementById("btn-type-delivery").classList.toggle("active", type === "delivery");
+      document.getElementById("btn-type-collection").classList.toggle("active", type === "collection");
+      document.getElementById("modal-heading").textContent = `Your Order (${type === "delivery" ? "Delivery" : "Collection"})`;
+      document.getElementById("delivery-address-group").style.display = type === "delivery" ? "flex" : "none";
+      document.getElementById("row-delivery-fee").style.display = type === "delivery" ? "flex" : "none";
+      updateCartUI();
+    }
+
     const menuData = [
       {
         id: "starters",
@@ -689,14 +762,14 @@
       if (!container) return;
       container.innerHTML = "";
 
-      menuData.forEach((cat, cIndex) => {
+      menuData.forEach((cat) => {
         const catHeader = document.createElement("div");
         catHeader.id = cat.id;
         catHeader.className = "section-title";
         catHeader.textContent = cat.name;
         container.appendChild(catHeader);
 
-        cat.items.forEach((dish, dIndex) => {
+        cat.items.forEach((dish) => {
           const card = document.createElement("div");
           card.className = "item-card";
 
@@ -757,11 +830,15 @@
 
     function updateCartUI() {
       const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-      const totalVal = cart.reduce((sum, item) => sum + (item.qty * item.price), 0);
+      const subTotal = cart.reduce((sum, item) => sum + (item.qty * item.price), 0);
+      const deliveryCharge = orderType === "delivery" ? DELIVERY_FEE : 0.00;
+      const grandTotal = subTotal > 0 ? (subTotal + deliveryCharge + PLATFORM_FEE) : 0.00;
 
       document.getElementById("cart-count").textContent = totalQty + (totalQty === 1 ? " item" : " items");
-      document.getElementById("cart-total").textContent = "£" + totalVal.toFixed(2);
-      document.getElementById("modal-total").textContent = "£" + totalVal.toFixed(2);
+      document.getElementById("cart-total").textContent = "£" + grandTotal.toFixed(2);
+      
+      document.getElementById("cost-subtotal").textContent = "£" + subTotal.toFixed(2);
+      document.getElementById("cost-grand-total").textContent = "£" + grandTotal.toFixed(2);
     }
 
     function openCart() {
@@ -819,34 +896,58 @@
     }
 
     function placeOrder() {
-      if (cart.length === 0) return;
+      if (cart.length === 0) {
+        alert("Please add items to your basket first.");
+        return;
+      }
+
+      const custName = document.getElementById("cust-name").value.trim() || "Customer";
+      const custPhone = document.getElementById("cust-phone").value.trim() || "";
+      const custAddress = document.getElementById("cust-address").value.trim() || "";
+      const custNotes = document.getElementById("cust-notes").value.trim() || "";
+
+      if (orderType === "delivery" && !custAddress) {
+        alert("Please enter a delivery address.");
+        return;
+      }
 
       const orderNumber = Math.floor(100 + Math.random() * 900).toString();
       const now = new Date();
       const hours = now.getHours();
       const minutes = String(now.getMinutes()).padStart(2, '0');
       const timeStr = `${hours % 12 || 12}:${minutes} ${hours >= 12 ? 'PM' : 'AM'}`;
-      const totalVal = cart.reduce((sum, item) => sum + (item.qty * item.price), 0);
+
+      const subTotal = cart.reduce((sum, item) => sum + (item.qty * item.price), 0);
+      const deliveryCharge = orderType === "delivery" ? DELIVERY_FEE : 0.00;
+      const grandTotal = subTotal + deliveryCharge + PLATFORM_FEE;
 
       const newOrder = {
         id: orderNumber,
-        customer: "Online Order",
+        type: orderType.toUpperCase(), // "DELIVERY" or "COLLECTION"
+        customer: custName,
+        phone: custPhone,
+        address: orderType === "delivery" ? custAddress : "COLLECTION AT SHOP",
+        notes: custNotes,
         time: timeStr,
         items: cart.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
-        total: Number(totalVal.toFixed(2))
+        subtotal: Number(subTotal.toFixed(2)),
+        deliveryFee: deliveryCharge,
+        platformFee: PLATFORM_FEE,
+        total: Number(grandTotal.toFixed(2))
       };
 
       const existingQueue = JSON.parse(localStorage.getItem("activeKitchenOrders") || "[]");
       existingQueue.unshift(newOrder);
       localStorage.setItem("activeKitchenOrders", JSON.stringify(existingQueue));
 
-      alert("Order #" + orderNumber + " placed and sent to the kitchen!");
+      alert(`Order #${orderNumber} (${orderType.toUpperCase()}) placed successfully!`);
       cart = [];
       updateCartUI();
       closeCart();
     }
 
     renderMenu();
+    updateCartUI();
   </script>
 </body>
 </html>
