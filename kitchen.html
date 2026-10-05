@@ -1,276 +1,24 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kitchen Live Dashboard - Demo Mode</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
-
-    body {
-      background-color: #121820;
-      color: #ffffff;
-      padding: 24px;
-    }
-
-    .header-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-
-    .title-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    h1 {
-      color: #ff7a00;
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
-
-    .badge-bar {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .badge-status {
-      display: inline-flex;
-      align-items: center;
-      width: fit-content;
-      background: #0d4722;
-      color: #4ade80;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 6px;
-    }
-
-    .badge-demo {
-      display: inline-flex;
-      align-items: center;
-      width: fit-content;
-      background: #3b2804;
-      color: #fbbf24;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 6px;
-      border: 1px solid #78350f;
-    }
-
-    .actions-bar {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .btn-action {
-      background: #2a3547;
-      color: #e2e8f0;
-      border: 1px solid #3e4c63;
-      padding: 8px 14px;
-      font-size: 14px;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-action:hover {
-      background: #3e4c63;
-    }
-
-    .btn-action.active {
-      background: #15803d;
-      color: #ffffff;
-      border-color: #22c55e;
-    }
-
-    .orders-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 20px;
-    }
-
-    .order-card {
-      background-color: #1e2634;
-      border: 1px solid #2d3748;
-      border-left: 6px solid #ff7a00;
-      border-radius: 8px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    }
-
-    .order-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      border-bottom: 1px solid #2d3748;
-      padding-bottom: 12px;
-    }
-
-    .order-number {
-      font-size: 20px;
-      font-weight: 700;
-      color: #f8fafc;
-    }
-
-    .order-customer {
-      font-size: 15px;
-      color: #94a3b8;
-      margin-top: 4px;
-    }
-
-    .order-time {
-      font-size: 14px;
-      font-weight: 600;
-      color: #e2e8f0;
-      background: #2a3547;
-      padding: 4px 8px;
-      border-radius: 4px;
-    }
-
-    .item-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .item-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 16px;
-      color: #f1f5f9;
-    }
-
-    .item-name {
-      font-weight: 500;
-    }
-
-    .item-price {
-      color: #cbd5e1;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .order-footer {
-      border-top: 1px solid #2d3748;
-      padding-top: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .card-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    .btn-print {
-      flex: 2;
-      background-color: #0099ff;
-      color: #ffffff;
-      border: none;
-      padding: 12px 14px;
-      font-size: 15px;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0, 153, 255, 0.35);
-      transition: background 0.15s ease-in-out;
-    }
-
-    .btn-print:hover {
-      background-color: #007acc;
-    }
-
-    .btn-done {
-      flex: 1;
-      background-color: #15803d;
-      color: #ffffff;
-      border: 1px solid #22c55e;
-      padding: 12px 14px;
-      font-size: 15px;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      text-align: center;
-      transition: background 0.15s ease-in-out;
-    }
-
-    .btn-done:hover {
-      background-color: #166534;
-    }
-
-    .empty-state {
-      grid-column: 1 / -1;
-      text-align: center;
-      padding: 48px;
-      background: #1e2634;
-      border-radius: 8px;
-      border: 1px dashed #3e4c63;
-      color: #94a3b8;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="header-bar">
-    <div class="title-group">
-      <h1>Kitchen Orders</h1>
-      <div class="badge-bar">
-        <span class="badge-status" id="status-badge">Auto-Print Ready</span>
-        <span class="badge-demo">Demo Mode</span>
-      </div>
-    </div>
-    <div class="actions-bar">
-      <button class="btn-action" onclick="generateSimulatedOrder()">+ Test Order</button>
-      <button class="btn-action" id="toggle-autoprint" onclick="toggleAutoPrint()">Auto-Print: OFF</button>
-    </div>
-  </div>
-
-  <div class="orders-grid" id="orders-container">
-    <!-- Orders appear here -->
-  </div>
-
-  <script>
-    // 24-character width fitted for 58mm printer roll
+<script>
     const LINE_WIDTH = 24;
     let autoPrintEnabled = false;
 
-    // Active order list
-    let activeOrders = [
-      {
-        id: "101",
-        customer: "Justin",
-        time: "11:40 AM",
-        items: [
-          { name: "Dan Dan Noodles", qty: 1, price: 8.50 },
-          { name: "Chicken Chow Mein", qty: 1, price: 8.95 }
-        ],
-        total: 17.45
-      }
-    ];
+    // Load saved orders from localStorage or seed initial order #101
+    let activeOrders = JSON.parse(localStorage.getItem("activeKitchenOrders") || "null");
+    if (!activeOrders || activeOrders.length === 0) {
+      activeOrders = [
+        {
+          id: "101",
+          customer: "Justin",
+          time: "11:40 AM",
+          items: [
+            { name: "Dan Dan Noodles", qty: 1, price: 8.50 },
+            { name: "Chicken Chow Mein", qty: 1, price: 8.95 }
+          ],
+          total: 17.45
+        }
+      ];
+      localStorage.setItem("activeKitchenOrders", JSON.stringify(activeOrders));
+    }
 
     function formatRow(left, right) {
       const maxLeft = LINE_WIDTH - right.length - 1;
@@ -288,7 +36,6 @@
       return " ".repeat(pad) + text;
     }
 
-    // Prints via proven Base64 plain-text format
     function sendToPrinter(order) {
       const sep = "=".repeat(LINE_WIDTH);
       const dash = "-".repeat(LINE_WIDTH);
@@ -320,13 +67,12 @@
       window.location.href = "rawbt:data:text/plain;base64," + base64Data;
     }
 
-    // Clears the order card when finished in the kitchen
     function completeOrder(orderId) {
       activeOrders = activeOrders.filter(order => order.id !== orderId);
+      localStorage.setItem("activeKitchenOrders", JSON.stringify(activeOrders));
       renderOrders();
     }
 
-    // Renders active orders to screen
     function renderOrders() {
       const container = document.getElementById("orders-container");
       container.innerHTML = "";
@@ -335,7 +81,7 @@
         container.innerHTML = `
           <div class="empty-state">
             <h2>No active orders</h2>
-            <p style="margin-top: 8px;">Tap <strong>+ Test Order</strong> at the top to simulate an incoming order.</p>
+            <p style="margin-top: 8px;">Tap <strong>+ Test Order</strong> at the top or place an order from the customer menu.</p>
           </div>
         `;
         return;
@@ -380,7 +126,6 @@
       });
     }
 
-    // Generates a mock order for demonstrations
     function generateSimulatedOrder() {
       const mockNames = ["Sarah M.", "David K.", "Elena R.", "Marcus T."];
       const menu = [
@@ -412,6 +157,7 @@
       };
 
       activeOrders.unshift(newOrder);
+      localStorage.setItem("activeKitchenOrders", JSON.stringify(activeOrders));
       renderOrders();
 
       if (autoPrintEnabled) {
@@ -426,8 +172,16 @@
       btn.classList.toggle("active", autoPrintEnabled);
     }
 
-    // Initial render on load
+    // Real-time listener: detects orders placed in another tab on gottaeat.co.uk
+    window.addEventListener("storage", (e) => {
+      if (e.key === "activeKitchenOrders" && e.newValue) {
+        activeOrders = JSON.parse(e.newValue);
+        renderOrders();
+        if (autoPrintEnabled && activeOrders.length > 0) {
+          sendToPrinter(activeOrders[0]);
+        }
+      }
+    });
+
     renderOrders();
-  </script>
-</body>
-</html>
+</script>
