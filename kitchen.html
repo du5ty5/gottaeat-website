@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -178,13 +179,18 @@
       font-weight: 700;
     }
 
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
     .btn-print {
-      display: block;
-      width: 100%;
+      flex: 2;
       background-color: #0099ff;
       color: #ffffff;
       border: none;
-      padding: 12px 18px;
+      padding: 12px 14px;
       font-size: 15px;
       font-weight: 600;
       border-radius: 6px;
@@ -198,8 +204,32 @@
       background-color: #007acc;
     }
 
-    .btn-print:active {
-      transform: scale(0.99);
+    .btn-done {
+      flex: 1;
+      background-color: #15803d;
+      color: #ffffff;
+      border: 1px solid #22c55e;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.15s ease-in-out;
+    }
+
+    .btn-done:hover {
+      background-color: #166534;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 48px;
+      background: #1e2634;
+      border-radius: 8px;
+      border: 1px dashed #3e4c63;
+      color: #94a3b8;
     }
   </style>
 </head>
@@ -210,7 +240,7 @@
       <h1>Kitchen Orders</h1>
       <div class="badge-bar">
         <span class="badge-status" id="status-badge">Auto-Print Ready</span>
-        <span class="badge-demo">Demo Mode (Client Trial)</span>
+        <span class="badge-demo">Demo Mode</span>
       </div>
     </div>
     <div class="actions-bar">
@@ -220,15 +250,15 @@
   </div>
 
   <div class="orders-grid" id="orders-container">
-    <!-- Dynamic Cards Rendered Here -->
+    <!-- Orders appear here -->
   </div>
 
   <script>
-    // Configured for M58-LL 58mm printer
+    // 24-character width fitted for 58mm printer roll
     const LINE_WIDTH = 24;
     let autoPrintEnabled = false;
 
-    // Preloaded demonstration orders ready for presentation
+    // Active order list
     let activeOrders = [
       {
         id: "101",
@@ -242,7 +272,6 @@
       }
     ];
 
-    // Helper: Truncates item names so columns don't overflow the 24-character width
     function formatRow(left, right) {
       const maxLeft = LINE_WIDTH - right.length - 1;
       let trimmedLeft = left;
@@ -259,7 +288,7 @@
       return " ".repeat(pad) + text;
     }
 
-    // Dynamic RawBT print dispatcher
+    // Prints via proven Base64 plain-text format
     function sendToPrinter(order) {
       const sep = "=".repeat(LINE_WIDTH);
       const dash = "-".repeat(LINE_WIDTH);
@@ -291,10 +320,26 @@
       window.location.href = "rawbt:data:text/plain;base64," + base64Data;
     }
 
-    // Render cards to the kitchen dashboard
+    // Clears the order card when finished in the kitchen
+    function completeOrder(orderId) {
+      activeOrders = activeOrders.filter(order => order.id !== orderId);
+      renderOrders();
+    }
+
+    // Renders active orders to screen
     function renderOrders() {
       const container = document.getElementById("orders-container");
       container.innerHTML = "";
+
+      if (activeOrders.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <h2>No active orders</h2>
+            <p style="margin-top: 8px;">Tap <strong>+ Test Order</strong> at the top to simulate an incoming order.</p>
+          </div>
+        `;
+        return;
+      }
 
       activeOrders.forEach(order => {
         const card = document.createElement("div");
@@ -322,15 +367,20 @@
             <span>Total:</span>
             <span>GBP ${order.total.toFixed(2)}</span>
           </div>
-          <button class="btn-print" onclick="sendToPrinter(activeOrders.find(o => o.id === '${order.id}'))">
-            Print Ticket (RawBT)
-          </button>
+          <div class="card-actions">
+            <button class="btn-print" onclick="sendToPrinter(activeOrders.find(o => o.id === '${order.id}'))">
+              Print Ticket
+            </button>
+            <button class="btn-done" onclick="completeOrder('${order.id}')">
+              Done
+            </button>
+          </div>
         `;
         container.appendChild(card);
       });
     }
 
-    // Generates a mock order to demonstrate real-time workflow
+    // Generates a mock order for demonstrations
     function generateSimulatedOrder() {
       const mockNames = ["Sarah M.", "David K.", "Elena R.", "Marcus T."];
       const menu = [
@@ -376,26 +426,8 @@
       btn.classList.toggle("active", autoPrintEnabled);
     }
 
-    // Initial render
+    // Initial render on load
     renderOrders();
-
-    /* ============================================================
-       GO-LIVE HOOK (Uncomment and configure when customer signs up)
-       ============================================================
-       async function pollLiveOrders() {
-         try {
-           const res = await fetch("https://api.gottaeat.co.uk/orders/active");
-           if (res.ok) {
-             const data = await res.json();
-             activeOrders = data;
-             renderOrders();
-           }
-         } catch (err) {
-           console.error("Live order sync error:", err);
-         }
-       }
-       // setInterval(pollLiveOrders, 10000);
-    */
   </script>
 </body>
 </html>
