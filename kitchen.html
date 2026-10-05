@@ -190,17 +190,17 @@
       <div class="item-list">
         <div class="item-row">
           <span class="item-name">1x Dan Dan Noodles</span>
-          <span class="item-price">£8.50</span>
+          <span class="item-price">8.50</span>
         </div>
         <div class="item-row">
           <span class="item-name">1x Chicken Chow Mein</span>
-          <span class="item-price">£8.95</span>
+          <span class="item-price">8.95</span>
         </div>
       </div>
 
       <div class="order-footer">
         <span>Total:</span>
-        <span>£17.45</span>
+        <span>GBP 17.45</span>
       </div>
 
       <button class="btn-print" onclick="printTicket()">Print Ticket (RawBT)</button>
@@ -209,55 +209,27 @@
 
   <script>
     function printTicket() {
-      // 58mm POS thermal printers print 32 standard characters across
-      const WIDTH = 32;
-      const lineDivider = "=".repeat(WIDTH);
-      const dashDivider = "-".repeat(WIDTH);
-
-      // Utility function to pad columns cleanly to exactly 32 columns
-      function formatRow(leftText, rightText) {
-        const left = String(leftText);
-        const right = String(rightText);
-        const spaces = Math.max(1, WIDTH - (left.length + right.length));
-        return left + " ".repeat(spaces) + right;
-      }
-
-      function centerText(text) {
-        const str = String(text);
-        if (str.length >= WIDTH) return str;
-        const totalPad = WIDTH - str.length;
-        const padLeft = Math.floor(totalPad / 2);
-        return " ".repeat(padLeft) + str;
-      }
-
-      // Ticket receipt structure
-      const ticketLines = [
-        "",
-        centerText("WOKS WAGON"),
-        centerText("GOTTAEAT ORDER"),
-        lineDivider,
-        formatRow("Order: #101", "11:40 AM"),
+      // 24-character width verified for M58-LL 58mm printer
+      const ticket = [
+        "========================",
+        "       WOKS WAGON",
+        "     GOTTAEAT ORDER",
+        "========================",
+        "#101            11:40 AM",
         "Customer: Justin",
-        dashDivider,
-        formatRow("1x Dan Dan Noodles", "8.50"),
-        formatRow("1x Chicken Chow Mein", "8.95"),
-        dashDivider,
-        formatRow("TOTAL:", "GBP 17.45"),
-        lineDivider,
-        "",
-        centerText("Thank you!"),
+        "------------------------",
+        "1x Dan Dan Noodles  8.50",
+        "1x Chicken Chow Mein 8.95",
+        "------------------------",
+        "TOTAL:         GBP 17.45",
+        "========================",
         "",
         "",
-        "",
-        ""  // Feeds paper past the printer tear bar
-      ];
+        ""
+      ].join("\n");
 
-      // Join with standard newline and execute RawBT intent with clean URL encoding
-      const payload = ticketLines.join("\n");
-      const rawbtIntent = "rawbt:data:text/plain;charset=utf-8," + encodeURIComponent(payload);
-
-      // Direct handoff to RawBT
-      window.location.href = rawbtIntent;
+      // Transmit as clean URL-encoded plain text to avoid binary data dumps
+      window.location.href = "rawbt:data:text/plain;charset=utf-8," + encodeURIComponent(ticket);
     }
   </script>
 </body>
