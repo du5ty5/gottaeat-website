@@ -45,10 +45,21 @@
 
   <script>
     function printDocket(orderNum, name, items, total) {
-      const text = `===============================\\n       GOTTAEAT ORDER\\n       ${orderNum}\\n===============================\\nCustomer: ${name}\\n-------------------------------\\n${items}\\n-------------------------------\\nTotal: ${total}\\n===============================\\n\\n\\n`;
-      // Sends direct print intent to RawBT on your Android tablet
-      window.location.href = "rawbt:" + encodeURIComponent(text);
+      const text = [
+        "================================",
+        "          GOTTAEAT ORDER        ",
+        `              ${orderNum}       `,
+        "================================",
+        `Customer: ${name}`,
+        "--------------------------------",
+        items,
+        "--------------------------------",
+        `Total: ${total}`,
+        "================================",
+        "",
+        "",
+        ""
+      ].join("\n");
+
+      window.location.href = "rawbt:" + encodeURI(text);
     }
-  </script>
-</body>
-</html>
