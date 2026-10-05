@@ -318,7 +318,7 @@
       ticket.push(dash);
 
       order.items.forEach(item => {
-        const itemLine = `${item.qty}x${item.name}`;
+        const itemLine = `${item.qty}x ${item.name}`;
         ticket.push(formatRow(itemLine, item.price.toFixed(2)));
       });
 
@@ -364,7 +364,7 @@
 
         const itemsHtml = order.items.map(item => `
           <div class="item-row">
-            <span class="item-name">${item.qty}x${item.name}</span>
+            <span class="item-name">${item.qty}x ${item.name}</span>
             <span class="item-price">${item.price.toFixed(2)}</span>
           </div>
         `).join("");
@@ -374,4 +374,100 @@
             <div>
               <div style="display:flex; align-items:center;">
                 <span class="order-number">Order #${order.id}</span>
-                <span class="order-
+                <span class="order-type-badge ${badgeClass}">${order.type || "DELIVERY"}</span>
+              </div>
+              <div class="order-customer">👤 ${order.customer} ${order.phone ? `• 📞 ${order.phone}` : ''}</div>
+              ${isDelivery && order.address ? `<div class="order-address">📍 ${order.address}</div>` : ''}
+              ${order.notes ? `<div class="order-notes">📝 ${order.notes}</div>` : ''}
+            </div>
+            <div class="order-time">${order.time}</div>
+          </div>
+          <div class="item-list">
+            ${itemsHtml}
+          </div>
+          <div class="order-footer">
+            <span>Total:</span>
+            <span>GBP ${order.total.toFixed(2)}</span>
+          </div>
+          <div class="card-actions">
+            <button class="btn-print" onclick="sendToPrinter(activeOrders.find(o => o.id === '${order.id}'))">
+              Print Ticket
+            </button>
+            <button class="btn-done" onclick="completeOrder('${order.id}')">
+              Done
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function generateSimulatedOrder(type = "DELIVERY") {
+      const mockNames = ["Sarah M.", "David K.", "Elena R.", "Marcus T."];
+      const menu = [
+        { name: "Sweet & Sour Pork", price: 9.20 },
+        { name: "Egg Fried Rice", price: 4.50 },
+        { name: "Spring Rolls (4)", price: 4.80 },
+        { name: "Beef Chow Mein", price: 9.50 }
+      ];
+
+      const randomId = Math.floor(102 + Math.random() * 800).toString();
+      const randomCustomer = mockNames[Math.floor(Math.random() * mockNames.length)];
+      const randomItem1 = menu[Math.floor(Math.random() * menu.length)];
+      const randomItem2 = menu[Math.floor(Math.random() * menu.length)];
+
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const timeStr = `${hours % 12 || 12}:${minutes} ${hours >= 12 ? 'PM' : 'AM'}`;
+
+      const sub = randomItem1.price + randomItem2.price;
+      const delCharge = type === "DELIVERY" ? 1.50 : 0.00;
+      const platCharge = 0.99;
+
+      const newOrder = {
+        id: randomId,
+        type: type,
+        customer: randomCustomer,
+        phone: "07987 654321",
+        address: type === "DELIVERY" ? "44 Seafront Rd, PO11 9HL" : "COLLECTION AT SHOP",
+        notes: type === "DELIVERY" ? "Leave by side gate" : "",
+        time: timeStr,
+        items: [
+          { name: randomItem1.name, qty: 1, price: randomItem1.price },
+          { name: randomItem2.name, qty: 1, price: randomItem2.price }
+        ],
+        total: Number((sub + delCharge + platCharge).toFixed(2))
+      };
+
+      activeOrders.unshift(newOrder);
+      localStorage.setItem("activeKitchenOrders", JSON.stringify(activeOrders));
+      renderOrders();
+
+      if (autoPrintEnabled) {
+        sendToPrinter(newOrder);
+      }
+    }
+
+    function toggleAutoPrint() {
+      autoPrintEnabled = !autoPrintEnabled;
+      const btn = document.getElementById("toggle-autoprint");
+      btn.textContent = "Auto-Print: " + (autoPrintEnabled ? "ON" : "OFF");
+      btn.classList.toggle("active", autoPrintEnabled);
+    }
+
+    // Listens for orders placed in the customer tab
+    window.addEventListener("storage", (e) => {
+      if (e.key === "activeKitchenOrders" && e.newValue) {
+        activeOrders = JSON.parse(e.newValue);
+        renderOrders();
+        if (autoPrintEnabled && activeOrders.length > 0) {
+          sendToPrinter(activeOrders[0]);
+        }
+      }
+    });
+
+    renderOrders();
+  </script>
+</body>
+</html>
