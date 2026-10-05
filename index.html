@@ -115,7 +115,6 @@
       padding: 14px;
     }
 
-    /* Scroll Margin Prevents Section Title from Getting Covered */
     .section-title {
       font-size: 17px;
       font-weight: 700;
@@ -274,11 +273,19 @@
       border-top: 1px solid #cbd5e1;
       padding-top: 6px;
     }
+
+    .min-spend-notice {
+      color: #dc2626;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      display: none;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Combined Header & Sub-Category Bar that stays pinned together -->
   <div class="top-pinned-container">
     <header>
       <div class="brand-title">WOKS WAGON</div>
@@ -361,7 +368,8 @@
           <div class="cost-row cost-total-row"><span>Total:</span><span id="cost-grand-total">£0.00</span></div>
         </div>
 
-        <button class="btn-checkout" style="width:100%;" onclick="placeOrder()">Place Order</button>
+        <div class="min-spend-notice" id="min-spend-notice">Minimum order for delivery is £15.00</div>
+        <button class="btn-checkout" id="btn-place-order" style="width:100%;" onclick="placeOrder()">Place Order</button>
       </div>
     </div>
   </div>
@@ -370,6 +378,7 @@
     let orderType = "delivery";
     const DELIVERY_FEE = 1.50;
     const PLATFORM_FEE = 0.99;
+    const MIN_DELIVERY_SPEND = 15.00;
 
     function setOrderType(type) {
       orderType = type;
@@ -836,6 +845,18 @@
       
       document.getElementById("cost-subtotal").textContent = "£" + subTotal.toFixed(2);
       document.getElementById("cost-grand-total").textContent = "£" + grandTotal.toFixed(2);
+
+      const notice = document.getElementById("min-spend-notice");
+      const placeBtn = document.getElementById("btn-place-order");
+      if (orderType === "delivery" && subTotal < MIN_DELIVERY_SPEND && subTotal > 0) {
+        notice.style.display = "block";
+        placeBtn.disabled = true;
+        placeBtn.style.opacity = "0.6";
+      } else {
+        notice.style.display = "none";
+        placeBtn.disabled = false;
+        placeBtn.style.opacity = "1";
+      }
     }
 
     function openCart() {
@@ -898,6 +919,12 @@
         return;
       }
 
+      const subTotal = cart.reduce((sum, item) => sum + (item.qty * item.price), 0);
+      if (orderType === "delivery" && subTotal < MIN_DELIVERY_SPEND) {
+        alert("Minimum order spend for delivery is £" + MIN_DELIVERY_SPEND.toFixed(2));
+        return;
+      }
+
       const custName = document.getElementById("cust-name").value.trim() || "Customer";
       const custPhone = document.getElementById("cust-phone").value.trim() || "";
       const custAddress = document.getElementById("cust-address").value.trim() || "";
@@ -914,7 +941,6 @@
       const minutes = String(now.getMinutes()).padStart(2, '0');
       const timeStr = `${hours % 12 || 12}:${minutes} ${hours >= 12 ? 'PM' : 'AM'}`;
 
-      const subTotal = cart.reduce((sum, item) => sum + (item.qty * item.price), 0);
       const deliveryCharge = orderType === "delivery" ? DELIVERY_FEE : 0.00;
       const grandTotal = subTotal + deliveryCharge + PLATFORM_FEE;
 
