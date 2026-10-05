@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GottaEat - Order Online</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #f97316;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding-bottom: 90px; }
+    header { background: #020617; padding: 1rem; position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
+    h1 { font-size: 1.25rem; font-weight: bold; color: var(--accent); }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; margin-left: 10px; }
+    .container { max-width: 600px; margin: 0 auto; padding: 1rem; }
+    .category-title { font-size: 1.1rem; margin: 1.5rem 0 0.75rem; color: var(--text); border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 4px; }
+    .item-card { background: var(--card); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; }
+    .item-info { flex: 1; margin-right: 1rem; }
+    .item-name { font-weight: 600; font-size: 1rem; margin-bottom: 4px; }
+    .item-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; }
+    .item-price { font-weight: bold; color: var(--accent); }
+    .btn-add { background: var(--accent); color: white; border: none; padding: 0.5rem 0.9rem; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #020617; border-top: 1px solid #334155; padding: 1rem; display: flex; justify-content: space-between; align-items: center; max-width: 600px; margin: 0 auto; }
+    .btn-checkout { background: #22c55e; color: white; border: none; padding: 0.75rem 1.25rem; border-radius: 6px; font-weight: bold; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>GottaEat</h1>
+    <div class="nav-links">
+      <a href="/kitchen.html">Kitchen Portal</a>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="category-title">Popular Items</div>
+    <div id="menu-items"></div>
+  </div>
+
+  <div class="cart-bar">
+    <div>
+      <div style="font-size: 0.8rem; color: var(--text-muted);">Total (<span id="cart-count">0</span> items)</div>
+      <div style="font-size: 1.2rem; font-weight: bold;">£<span id="cart-total">0.00</span></div>
+    </div>
+    <button class="btn-checkout" onclick="alert('Checkout connected to Stripe next!')">Checkout</button>
+  </div>
+
+  <script>
+    const sampleItems = [
+      { id: 1, name: "Dan Dan Noodles", desc: "Classic spicy Sichuan noodles with seasoned pork", price: 8.50 },
+      { id: 2, name: "Chicken Chow Mein", desc: "Stir-fried noodles with chicken breast & crisp veg", price: 8.95 },
+      { id: 3, name: "Beef Chow Fun", desc: "Wide rice noodles dry-fried with tender beef cuts", price: 9.50 },
+      { id: 4, name: "Egg Fried Rice", desc: "Classic wok-tossed long-grain jasmine rice", price: 4.50 }
+    ];
+
+    let cart = [];
+
+    function renderMenu() {
+      const el = document.getElementById('menu-items');
+      el.innerHTML = sampleItems.map(item => `
+        <div class="item-card">
+          <div class="item-info">
+            <div class="item-name">${item.name}</div>
+            <div class="item-desc">${item.desc}</div>
+            <div class="item-price">£${item.price.toFixed(2)}</div>
+          </div>
+          <button class="btn-add" onclick="addToCart(${item.id})">Add</button>
+        </div>
+      `).join('');
+    }
+
+    function addToCart(id) {
+      const item = sampleItems.find(i => i.id === id);
+      cart.push(item);
+      updateCart();
+    }
+
+    function updateCart() {
+      document.getElementById('cart-count').innerText = cart.length;
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+      document.getElementById('cart-total').innerText = total.toFixed(2);
+    }
+
+    renderMenu();
+  </script>
+</body>
+</html>
