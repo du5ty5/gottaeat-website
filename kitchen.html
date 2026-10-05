@@ -58,19 +58,6 @@
       border-radius: 6px;
     }
 
-    .badge-demo {
-      display: inline-flex;
-      align-items: center;
-      width: fit-content;
-      background: #3b2804;
-      color: #fbbf24;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 6px;
-      border: 1px solid #78350f;
-    }
-
     .actions-bar {
       display: flex;
       gap: 10px;
@@ -86,11 +73,6 @@
       font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-action:hover {
-      background: #3e4c63;
     }
 
     .btn-action.active {
@@ -113,7 +95,7 @@
       padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
     }
 
@@ -131,14 +113,43 @@
       color: #f8fafc;
     }
 
+    .order-type-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      margin-left: 6px;
+    }
+    .badge-delivery { background: #0284c7; color: #ffffff; }
+    .badge-collection { background: #d97706; color: #ffffff; }
+
     .order-customer {
       font-size: 15px;
       color: #94a3b8;
       margin-top: 4px;
     }
 
+    .order-address {
+      font-size: 13px;
+      color: #38bdf8;
+      margin-top: 4px;
+      background: #0f172a;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+    .order-notes {
+      font-size: 12px;
+      color: #fbbf24;
+      background: #2b1d06;
+      padding: 4px 8px;
+      border-radius: 4px;
+      border-left: 3px solid #f59e0b;
+    }
+
     .order-time {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: #e2e8f0;
       background: #2a3547;
@@ -149,39 +160,32 @@
     .item-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .item-row {
       display: flex;
       justify-content: space-between;
-      font-size: 16px;
+      font-size: 15px;
       color: #f1f5f9;
     }
 
-    .item-name {
-      font-weight: 500;
-    }
-
-    .item-price {
-      color: #cbd5e1;
-      font-variant-numeric: tabular-nums;
-    }
+    .item-name { font-weight: 500; }
+    .item-price { color: #cbd5e1; }
 
     .order-footer {
       border-top: 1px solid #2d3748;
-      padding-top: 14px;
+      padding-top: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 700;
     }
 
     .card-actions {
       display: flex;
       gap: 8px;
-      margin-top: 4px;
     }
 
     .btn-print {
@@ -194,13 +198,6 @@
       font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0, 153, 255, 0.35);
-      transition: background 0.15s ease-in-out;
-    }
-
-    .btn-print:hover {
-      background-color: #007acc;
     }
 
     .btn-done {
@@ -213,12 +210,6 @@
       font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
-      text-align: center;
-      transition: background 0.15s ease-in-out;
-    }
-
-    .btn-done:hover {
-      background-color: #166534;
     }
 
     .empty-state {
@@ -238,31 +229,32 @@
     <div class="title-group">
       <h1>Kitchen Orders</h1>
       <div class="badge-bar">
-        <span class="badge-status" id="status-badge">Auto-Print Ready</span>
-        <span class="badge-demo">Demo Mode</span>
+        <span class="badge-status">Auto-Print Ready</span>
       </div>
     </div>
     <div class="actions-bar">
-      <button class="btn-action" onclick="generateSimulatedOrder()">+ Test Order</button>
+      <button class="btn-action" onclick="generateSimulatedOrder('DELIVERY')">+ Test Delivery</button>
+      <button class="btn-action" onclick="generateSimulatedOrder('COLLECTION')">+ Test Collection</button>
       <button class="btn-action" id="toggle-autoprint" onclick="toggleAutoPrint()">Auto-Print: OFF</button>
     </div>
   </div>
 
-  <div class="orders-grid" id="orders-container">
-    <!-- Orders appear here -->
-  </div>
+  <div class="orders-grid" id="orders-container"></div>
 
   <script>
     const LINE_WIDTH = 24;
     let autoPrintEnabled = false;
 
-    // Load persistent orders or default to starter demo order #101
     let activeOrders = JSON.parse(localStorage.getItem("activeKitchenOrders") || "null");
     if (!activeOrders || activeOrders.length === 0) {
       activeOrders = [
         {
           id: "101",
+          type: "DELIVERY",
           customer: "Justin",
+          phone: "07123 456789",
+          address: "12 High Street, PO11",
+          notes: "Ring doorbell",
           time: "11:40 AM",
           items: [
             { name: "Dan Dan Noodles", qty: 1, price: 8.50 },
@@ -290,6 +282,7 @@
       return " ".repeat(pad) + text;
     }
 
+    // Dynamic 24-character Base64 thermal ticket
     function sendToPrinter(order) {
       const sep = "=".repeat(LINE_WIDTH);
       const dash = "-".repeat(LINE_WIDTH);
@@ -297,15 +290,35 @@
       let ticket = [
         sep,
         centerRow("WOKS WAGON"),
-        centerRow("GOTTAEAT ORDER"),
+        centerRow("*** " + (order.type || "ONLINE") + " ***"),
         sep,
         formatRow("#" + order.id, order.time),
-        "Customer: " + order.customer.substring(0, 14),
-        dash
+        "Cust: " + order.customer.substring(0, 17)
       ];
 
+      if (order.phone) {
+        ticket.push("Tel:  " + order.phone.substring(0, 18));
+      }
+
+      if (order.type === "DELIVERY" && order.address) {
+        ticket.push(dash);
+        ticket.push("DELIVERY TO:");
+        if (order.address.length > LINE_WIDTH) {
+          ticket.push(order.address.substring(0, LINE_WIDTH));
+          ticket.push(order.address.substring(LINE_WIDTH, LINE_WIDTH * 2));
+        } else {
+          ticket.push(order.address);
+        }
+      }
+
+      if (order.notes) {
+        ticket.push("NOTE: " + order.notes.substring(0, 18));
+      }
+
+      ticket.push(dash);
+
       order.items.forEach(item => {
-        const itemLine = `${item.qty}x ${item.name}`;
+        const itemLine = `${item.qty}x${item.name}`;
         ticket.push(formatRow(itemLine, item.price.toFixed(2)));
       });
 
@@ -336,7 +349,7 @@
         container.innerHTML = `
           <div class="empty-state">
             <h2>No active orders</h2>
-            <p style="margin-top: 8px;">Tap <strong>+ Test Order</strong> or place an order on the customer menu.</p>
+            <p style="margin-top: 8px;">Tap <strong>+ Test Delivery</strong> or place an order from the customer menu.</p>
           </div>
         `;
         return;
@@ -346,9 +359,12 @@
         const card = document.createElement("div");
         card.className = "order-card";
 
+        const isDelivery = (order.type || "DELIVERY") === "DELIVERY";
+        const badgeClass = isDelivery ? "badge-delivery" : "badge-collection";
+
         const itemsHtml = order.items.map(item => `
           <div class="item-row">
-            <span class="item-name">${item.qty}x ${item.name}</span>
+            <span class="item-name">${item.qty}x${item.name}</span>
             <span class="item-price">${item.price.toFixed(2)}</span>
           </div>
         `).join("");
@@ -356,89 +372,6 @@
         card.innerHTML = `
           <div class="order-header">
             <div>
-              <div class="order-number">Order #${order.id}</div>
-              <div class="order-customer">Customer: ${order.customer}</div>
-            </div>
-            <div class="order-time">${order.time}</div>
-          </div>
-          <div class="item-list">
-            ${itemsHtml}
-          </div>
-          <div class="order-footer">
-            <span>Total:</span>
-            <span>GBP ${order.total.toFixed(2)}</span>
-          </div>
-          <div class="card-actions">
-            <button class="btn-print" onclick="sendToPrinter(activeOrders.find(o => o.id === '${order.id}'))">
-              Print Ticket
-            </button>
-            <button class="btn-done" onclick="completeOrder('${order.id}')">
-              Done
-            </button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    function generateSimulatedOrder() {
-      const mockNames = ["Sarah M.", "David K.", "Elena R.", "Marcus T."];
-      const menu = [
-        { name: "Sweet & Sour Pork", price: 9.20 },
-        { name: "Egg Fried Rice", price: 4.50 },
-        { name: "Spring Rolls (4)", price: 4.80 },
-        { name: "Beef Chow Mein", price: 9.50 }
-      ];
-
-      const randomId = Math.floor(102 + Math.random() * 800).toString();
-      const randomCustomer = mockNames[Math.floor(Math.random() * mockNames.length)];
-      const randomItem1 = menu[Math.floor(Math.random() * menu.length)];
-      const randomItem2 = menu[Math.floor(Math.random() * menu.length)];
-
-      const now = new Date();
-      const hours = now.getHours();
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const timeStr = `${hours % 12 || 12}:${minutes} ${hours >= 12 ? 'PM' : 'AM'}`;
-
-      const newOrder = {
-        id: randomId,
-        customer: randomCustomer,
-        time: timeStr,
-        items: [
-          { name: randomItem1.name, qty: 1, price: randomItem1.price },
-          { name: randomItem2.name, qty: 1, price: randomItem2.price }
-        ],
-        total: Number((randomItem1.price + randomItem2.price).toFixed(2))
-      };
-
-      activeOrders.unshift(newOrder);
-      localStorage.setItem("activeKitchenOrders", JSON.stringify(activeOrders));
-      renderOrders();
-
-      if (autoPrintEnabled) {
-        sendToPrinter(newOrder);
-      }
-    }
-
-    function toggleAutoPrint() {
-      autoPrintEnabled = !autoPrintEnabled;
-      const btn = document.getElementById("toggle-autoprint");
-      btn.textContent = "Auto-Print: " + (autoPrintEnabled ? "ON" : "OFF");
-      btn.classList.toggle("active", autoPrintEnabled);
-    }
-
-    // Auto-update dashboard when customer places an order
-    window.addEventListener("storage", (e) => {
-      if (e.key === "activeKitchenOrders" && e.newValue) {
-        activeOrders = JSON.parse(e.newValue);
-        renderOrders();
-        if (autoPrintEnabled && activeOrders.length > 0) {
-          sendToPrinter(activeOrders[0]);
-        }
-      }
-    });
-
-    renderOrders();
-  </script>
-</body>
-</html>
+              <div style="display:flex; align-items:center;">
+                <span class="order-number">Order #${order.id}</span>
+                <span class="order-
