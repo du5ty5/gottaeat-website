@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kitchen Live Dashboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+    body { background: #0f172a; color: #f8fafc; padding: 1rem; }
+    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #334155; padding-bottom: 1rem; margin-bottom: 1rem; }
+    h1 { color: #f97316; font-size: 1.5rem; }
+    .status-badge { background: #22c55e; color: #020617; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; }
+    .ticket-list { display: grid; gap: 1rem; }
+    .ticket { background: #1e293b; border-left: 6px solid #f97316; border-radius: 8px; padding: 1rem; }
+    .ticket-top { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-weight: bold; }
+    .items { margin: 0.75rem 0; border-top: 1px dashed #475569; border-bottom: 1px dashed #475569; padding: 0.5rem 0; }
+    .item-row { display: flex; justify-content: space-between; margin: 4px 0; }
+    .btn-print { background: #38bdf8; color: #020617; border: none; padding: 0.6rem 1rem; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Kitchen Orders</h1>
+      <span class="status-badge">Auto-Print Ready</span>
+    </div>
+    <a href="/index.html" style="color: #94a3b8; text-decoration: none;">Customer View</a>
+  </header>
+
+  <div class="ticket-list" id="tickets">
+    <div class="ticket">
+      <div class="ticket-top">
+        <span>Order #101</span>
+        <span>11:40 AM</span>
+      </div>
+      <div>Customer: Justin</div>
+      <div class="items">
+        <div class="item-row"><span>1x Dan Dan Noodles</span><span>£8.50</span></div>
+        <div class="item-row"><span>1x Chicken Chow Mein</span><span>£8.95</span></div>
+      </div>
+      <div>Total: <strong>£17.45</strong></div>
+      <button class="btn-print" onclick="printDocket('#101', 'Justin', '1x Dan Dan Noodles\\n1x Chicken Chow Mein', '£17.45')">Print Ticket (RawBT)</button>
+    </div>
+  </div>
+
+  <script>
+    function printDocket(orderNum, name, items, total) {
+      const text = `===============================\\n       GOTTAEAT ORDER\\n       ${orderNum}\\n===============================\\nCustomer: ${name}\\n-------------------------------\\n${items}\\n-------------------------------\\nTotal: ${total}\\n===============================\\n\\n\\n`;
+      // Sends direct print intent to RawBT on your Android tablet
+      window.location.href = "rawbt:" + encodeURIComponent(text);
+    }
+  </script>
+</body>
+</html>
