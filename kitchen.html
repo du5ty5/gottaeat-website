@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kitchen Live Dashboard</title>
+  <title>Kitchen Live Dashboard - Demo Mode</title>
   <style>
     * {
       box-sizing: border-box;
@@ -23,6 +23,8 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
     }
 
     .title-group {
@@ -38,6 +40,12 @@
       letter-spacing: -0.5px;
     }
 
+    .badge-bar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
     .badge-status {
       display: inline-flex;
       align-items: center;
@@ -50,21 +58,50 @@
       border-radius: 6px;
     }
 
-    .nav-link {
-      color: #94a3b8;
-      text-decoration: none;
-      font-size: 15px;
-      font-weight: 500;
-      transition: color 0.2s;
+    .badge-demo {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      background: #3b2804;
+      color: #fbbf24;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #78350f;
     }
 
-    .nav-link:hover {
+    .actions-bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn-action {
+      background: #2a3547;
+      color: #e2e8f0;
+      border: 1px solid #3e4c63;
+      padding: 8px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-action:hover {
+      background: #3e4c63;
+    }
+
+    .btn-action.active {
+      background: #15803d;
       color: #ffffff;
+      border-color: #22c55e;
     }
 
     .orders-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
       gap: 20px;
     }
 
@@ -147,8 +184,8 @@
       background-color: #0099ff;
       color: #ffffff;
       border: none;
-      padding: 14px 20px;
-      font-size: 16px;
+      padding: 12px 18px;
+      font-size: 15px;
       font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
@@ -171,67 +208,194 @@
   <div class="header-bar">
     <div class="title-group">
       <h1>Kitchen Orders</h1>
-      <span class="badge-status">Auto-Print Ready</span>
+      <div class="badge-bar">
+        <span class="badge-status" id="status-badge">Auto-Print Ready</span>
+        <span class="badge-demo">Demo Mode (Client Trial)</span>
+      </div>
     </div>
-    <a href="#" class="nav-link">Customer View</a>
+    <div class="actions-bar">
+      <button class="btn-action" onclick="generateSimulatedOrder()">+ Test Order</button>
+      <button class="btn-action" id="toggle-autoprint" onclick="toggleAutoPrint()">Auto-Print: OFF</button>
+    </div>
   </div>
 
-  <div class="orders-grid">
-    <!-- Active Kitchen Order Card -->
-    <div class="order-card">
-      <div class="order-header">
-        <div>
-          <div class="order-number">Order #101</div>
-          <div class="order-customer">Customer: Justin</div>
-        </div>
-        <div class="order-time">11:40 AM</div>
-      </div>
-
-      <div class="item-list">
-        <div class="item-row">
-          <span class="item-name">1x Dan Dan Noodles</span>
-          <span class="item-price">8.50</span>
-        </div>
-        <div class="item-row">
-          <span class="item-name">1x Chicken Chow Mein</span>
-          <span class="item-price">8.95</span>
-        </div>
-      </div>
-
-      <div class="order-footer">
-        <span>Total:</span>
-        <span>GBP 17.45</span>
-      </div>
-
-      <button class="btn-print" onclick="printTicket()">Print Ticket (RawBT)</button>
-    </div>
+  <div class="orders-grid" id="orders-container">
+    <!-- Dynamic Cards Rendered Here -->
   </div>
 
   <script>
-    function printTicket() {
-      // 24-character width fitted for 58mm printer roll
-      const ticket = [
-        "========================",
-        "       WOKS WAGON",
-        "     GOTTAEAT ORDER",
-        "========================",
-        "#101            11:40 AM",
-        "Customer: Justin",
-        "------------------------",
-        "1x Dan Dan Noodles  8.50",
-        "1x Chicken Chow Mein 8.95",
-        "------------------------",
-        "TOTAL:         GBP 17.45",
-        "========================",
-        "",
-        "",
-        ""
-      ].join("\n");
+    // Configured for M58-LL 58mm printer
+    const LINE_WIDTH = 24;
+    let autoPrintEnabled = false;
 
-      // Encode cleanly as base64 to prevent URL-decoding errors in Android
-      const base64Data = btoa(unescape(encodeURIComponent(ticket)));
+    // Preloaded demonstration orders ready for presentation
+    let activeOrders = [
+      {
+        id: "101",
+        customer: "Justin",
+        time: "11:40 AM",
+        items: [
+          { name: "Dan Dan Noodles", qty: 1, price: 8.50 },
+          { name: "Chicken Chow Mein", qty: 1, price: 8.95 }
+        ],
+        total: 17.45
+      }
+    ];
+
+    // Helper: Truncates item names so columns don't overflow the 24-character width
+    function formatRow(left, right) {
+      const maxLeft = LINE_WIDTH - right.length - 1;
+      let trimmedLeft = left;
+      if (trimmedLeft.length > maxLeft) {
+        trimmedLeft = trimmedLeft.substring(0, maxLeft);
+      }
+      const spaces = Math.max(1, LINE_WIDTH - (trimmedLeft.length + right.length));
+      return trimmedLeft + " ".repeat(spaces) + right;
+    }
+
+    function centerRow(text) {
+      if (text.length >= LINE_WIDTH) return text;
+      const pad = Math.floor((LINE_WIDTH - text.length) / 2);
+      return " ".repeat(pad) + text;
+    }
+
+    // Dynamic RawBT print dispatcher
+    function sendToPrinter(order) {
+      const sep = "=".repeat(LINE_WIDTH);
+      const dash = "-".repeat(LINE_WIDTH);
+
+      let ticket = [
+        sep,
+        centerRow("WOKS WAGON"),
+        centerRow("GOTTAEAT ORDER"),
+        sep,
+        formatRow("#" + order.id, order.time),
+        "Customer: " + order.customer.substring(0, 14),
+        dash
+      ];
+
+      order.items.forEach(item => {
+        const itemLine = `${item.qty}x ${item.name}`;
+        ticket.push(formatRow(itemLine, item.price.toFixed(2)));
+      });
+
+      ticket.push(dash);
+      ticket.push(formatRow("TOTAL:", "GBP " + order.total.toFixed(2)));
+      ticket.push(sep);
+      ticket.push("");
+      ticket.push("");
+      ticket.push("");
+
+      const payload = ticket.join("\n");
+      const base64Data = btoa(unescape(encodeURIComponent(payload)));
       window.location.href = "rawbt:data:text/plain;base64," + base64Data;
     }
+
+    // Render cards to the kitchen dashboard
+    function renderOrders() {
+      const container = document.getElementById("orders-container");
+      container.innerHTML = "";
+
+      activeOrders.forEach(order => {
+        const card = document.createElement("div");
+        card.className = "order-card";
+
+        const itemsHtml = order.items.map(item => `
+          <div class="item-row">
+            <span class="item-name">${item.qty}x ${item.name}</span>
+            <span class="item-price">${item.price.toFixed(2)}</span>
+          </div>
+        `).join("");
+
+        card.innerHTML = `
+          <div class="order-header">
+            <div>
+              <div class="order-number">Order #${order.id}</div>
+              <div class="order-customer">Customer: ${order.customer}</div>
+            </div>
+            <div class="order-time">${order.time}</div>
+          </div>
+          <div class="item-list">
+            ${itemsHtml}
+          </div>
+          <div class="order-footer">
+            <span>Total:</span>
+            <span>GBP ${order.total.toFixed(2)}</span>
+          </div>
+          <button class="btn-print" onclick="sendToPrinter(activeOrders.find(o => o.id === '${order.id}'))">
+            Print Ticket (RawBT)
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Generates a mock order to demonstrate real-time workflow
+    function generateSimulatedOrder() {
+      const mockNames = ["Sarah M.", "David K.", "Elena R.", "Marcus T."];
+      const menu = [
+        { name: "Sweet & Sour Pork", price: 9.20 },
+        { name: "Egg Fried Rice", price: 4.50 },
+        { name: "Spring Rolls (4)", price: 4.80 },
+        { name: "Beef Chow Mein", price: 9.50 }
+      ];
+
+      const randomId = Math.floor(102 + Math.random() * 800).toString();
+      const randomCustomer = mockNames[Math.floor(Math.random() * mockNames.length)];
+      const randomItem1 = menu[Math.floor(Math.random() * menu.length)];
+      const randomItem2 = menu[Math.floor(Math.random() * menu.length)];
+
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const timeStr = `${hours % 12 || 12}:${minutes} ${hours >= 12 ? 'PM' : 'AM'}`;
+
+      const newOrder = {
+        id: randomId,
+        customer: randomCustomer,
+        time: timeStr,
+        items: [
+          { name: randomItem1.name, qty: 1, price: randomItem1.price },
+          { name: randomItem2.name, qty: 1, price: randomItem2.price }
+        ],
+        total: Number((randomItem1.price + randomItem2.price).toFixed(2))
+      };
+
+      activeOrders.unshift(newOrder);
+      renderOrders();
+
+      if (autoPrintEnabled) {
+        sendToPrinter(newOrder);
+      }
+    }
+
+    function toggleAutoPrint() {
+      autoPrintEnabled = !autoPrintEnabled;
+      const btn = document.getElementById("toggle-autoprint");
+      btn.textContent = "Auto-Print: " + (autoPrintEnabled ? "ON" : "OFF");
+      btn.classList.toggle("active", autoPrintEnabled);
+    }
+
+    // Initial render
+    renderOrders();
+
+    /* ============================================================
+       GO-LIVE HOOK (Uncomment and configure when customer signs up)
+       ============================================================
+       async function pollLiveOrders() {
+         try {
+           const res = await fetch("https://api.gottaeat.co.uk/orders/active");
+           if (res.ok) {
+             const data = await res.json();
+             activeOrders = data;
+             renderOrders();
+           }
+         } catch (err) {
+           console.error("Live order sync error:", err);
+         }
+       }
+       // setInterval(pollLiveOrders, 10000);
+    */
   </script>
 </body>
 </html>
