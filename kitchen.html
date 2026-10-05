@@ -43,7 +43,7 @@
     }
     .orders-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
       gap: 16px;
     }
     .card {
@@ -58,6 +58,12 @@
     .card.pending {
       border-color: #ef4444;
       background: #231924;
+      animation: alertPulse 1.2s infinite ease-in-out;
+    }
+    @keyframes alertPulse {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
     }
     .card.accepted {
       border-left: 6px solid #22c55e;
@@ -75,10 +81,19 @@
     .badge-cook { background: #16a34a; }
     .addr-box {
       background: #0f172a;
-      padding: 8px;
+      padding: 8px 10px;
       border-radius: 6px;
       font-size: 13px;
       line-height: 1.3;
+    }
+    .prep-box {
+      background: #064e3b;
+      color: #6ee7b7;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      width: fit-content;
     }
     .items-box {
       background: #161f2e;
@@ -92,6 +107,32 @@
     .item-line {
       display: flex;
       justify-content: space-between;
+    }
+    .time-selector {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-top: 4px;
+    }
+    .time-selector label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+    .time-btn {
+      background: #2a3547;
+      border: 1px solid #475569;
+      color: #ffffff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .time-btn.selected {
+      background: #e11d48;
+      border-color: #f43f5e;
     }
     .action-row {
       display: flex;
@@ -160,6 +201,7 @@
     const LINE_WIDTH = 24;
     let audioReady = false;
     let alarmInterval = null;
+    const selectedPrepTimes = {};
 
     function enableAudio() {
       audioReady = true;
@@ -195,6 +237,7 @@
         address: "12 High Street, PO11 0AA",
         notes: "Ring doorbell",
         time: "11:40 AM",
+        prepTime: "30 mins",
         items: [
           { name: "Dan Dan Noodles", qty: 1, price: 8.50 },
           { name: "Chicken Chow Mein", qty: 1, price: 8.95 }
@@ -269,6 +312,7 @@
       ];
 
       if (order.phone) ticket.push("Tel:  " + order.phone.substring(0, 16));
+      if (order.prepTime) ticket.push(formatRow("PREP:", order.prepTime));
 
       if (order.type === "DELIVERY" && order.address) {
         ticket.push(dash);
@@ -293,6 +337,8 @@
       ticket.push(dash);
       ticket.push(formatRow("TOTAL:", "GBP " + Number(order.total).toFixed(2)));
       ticket.push(sep);
+      ticket.push(centerRow("Thank you for ordering!"));
+      ticket.push(centerRow("02392 460505"));
       ticket.push("");
       ticket.push("");
       ticket.push("");
@@ -302,10 +348,16 @@
       window.location.href = "rawbt:data:text/plain;base64," + base64Data;
     }
 
+    function setPrepTime(id, mins) {
+      selectedPrepTimes[id] = mins + " mins";
+      draw();
+    }
+
     function accept(id) {
       const o = orders.find(x => x.id === id);
       if (o) {
         o.status = "ACCEPTED";
+        o.prepTime = selectedPrepTimes[id] || (o.type === "DELIVERY" ? "45 mins" : "20 mins");
         saveOrders();
         draw();
         checkAlarms();
@@ -314,6 +366,10 @@
     }
 
     function reject(id) {
+      const reasons = ["Kitchen at capacity", "Out of delivery area", "Store closing soon", "Item sold out"];
+      const chosen = prompt("Select or enter rejection reason:\n1. Kitchen at capacity\n2. Out of delivery area\n3. Store closing soon\n4. Item sold out", "Kitchen at capacity");
+      if (chosen === null) return;
+
       orders = orders.filter(x => x.id !== id);
       saveOrders();
       draw();
@@ -347,6 +403,7 @@
       orders.forEach(o => {
         const isPen = o.status === "PENDING";
         const isDel = o.type === "DELIVERY";
+        const currentPrep = selectedPrepTimes[o.id] || (isDel ? "45 mins" : "20 mins");
 
         const div = document.createElement("div");
         div.className = "card " + (isPen ? "pending" : "accepted");
@@ -357,6 +414,16 @@
             <span>£${Number(i.price * i.qty).toFixed(2)}</span>
           </div>
         `).join("");
+
+        const prepSelectorHtml = isPen ? `
+          <div class="time-selector">
+            <label>Est:</label>
+            <button class="time-btn ${currentPrep === '20 mins' ? 'selected' : ''}" onclick="setPrepTime('${o.id}', 20)">20m</button>
+            <button class="time-btn ${currentPrep === '30 mins' ? 'selected' : ''}" onclick="setPrepTime('${o.id}', 30)">30m</button>
+            <button class="time-btn ${currentPrep === '45 mins' ? 'selected' : ''}" onclick="setPrepTime('${o.id}', 45)">45m</button>
+            <button class="time-btn ${currentPrep === '60 mins' ? 'selected' : ''}" onclick="setPrepTime('${o.id}', 60)">60m</button>
+          </div>
+        ` : `<div class="prep-box">⏱ Ready in: ${o.prepTime || currentPrep}</div>`;
 
         div.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -370,9 +437,11 @@
 
           <div style="font-size:14px;"><strong>${o.customer}</strong> ${o.phone ? '• ' + o.phone : ''}</div>
 
-          ${isDel ? `<div class="addr-box">📍 <strong>Address:</strong><br>${o.address}</div>` : `<div class="addr-box" style="border-left:3px solid #d97706;">📦 Collection from counter</div>`}
+          ${isDel ? `<div class="addr-box">📍 <strong>Delivery Address:</strong><br>${o.address}</div>` : `<div class="addr-box" style="border-left:3px solid #d97706;">📦 Collection at Counter</div>`}
 
           ${o.notes ? `<div style="font-size:12px; color:#fbbf24;">📝 Note: ${o.notes}</div>` : ''}
+
+          ${prepSelectorHtml}
 
           <div class="items-box">${itemsHtml}</div>
 
@@ -383,7 +452,7 @@
 
           <div class="action-row">
             ${isPen ? `
-              <button class="btn-acc" onclick="accept('${o.id}')">✓ Accept & Print</button>
+              <button class="btn-acc" onclick="accept('${o.id}')">✓ Accept (${currentPrep})</button>
               <button class="btn-rej" onclick="reject('${o.id}')">✕ Reject</button>
             ` : `
               <button class="btn-prt" onclick="printSlip(orders.find(x => x.id === '${o.id}'))">🖨 Reprint</button>
